@@ -57,7 +57,7 @@ const ChessPiece: React.FC<{ piece: Piece }> = ({ piece }) => {
   );
 };
 
-export default function Component() {
+export default function ChessBoard() {
   const [board, setBoard] = useState<Square[][]>(initialBoard);
   const [selectedSquare, setSelectedSquare] = useState<[number, number] | null>(
     null
