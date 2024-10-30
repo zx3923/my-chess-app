@@ -3,6 +3,7 @@ import Root from "./Root";
 import MainScreen from "./MainScreen";
 import ChessBoard from "./ChessBoard";
 import SignUp from "./SignUp";
+import Login from "./Login";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -19,6 +20,10 @@ const router = createBrowserRouter([
       {
         path: "signup",
         element: <SignUp />,
+      },
+      {
+        path: "login",
+        element: <Login />,
       },
     ],
   },

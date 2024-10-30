@@ -2,11 +2,17 @@ import { useNavigate } from "react-router-dom";
 
 export default function MainScreen() {
   const navigate = useNavigate();
+
   const onStartClick = () => {
     navigate("/chessboard");
   };
+
   const signUpClick = () => {
     navigate("/signup");
+  };
+
+  const loginClick = () => {
+    navigate("/login");
   };
 
   return (
@@ -32,6 +38,7 @@ export default function MainScreen() {
             <button
               className="flex-1 px-6 py-2 bg-neutral-700 text-neutral-200 rounded-lg text-base font-medium hover:bg-neutral-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:ring-opacity-50"
               aria-label="로그인"
+              onClick={loginClick}
             >
               로그인
             </button>
