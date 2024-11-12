@@ -27,14 +27,20 @@ export default function SignUp() {
     e.preventDefault();
     console.log("Form submitted:", formData);
     try {
-      // url 아직
-      const response = await fetch("signupurl", {
+      const response = await fetch("http://localhost:8080/user/register", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
         body: JSON.stringify(formData),
       });
       const data = await response.json();
-      console.log(data);
+      if (data.status) {
+        navigate("/");
+      } else {
+        alert(data.message);
+      }
     } catch (error) {
       console.error(error);
     }

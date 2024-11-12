@@ -20,14 +20,20 @@ export default function Login() {
     e.preventDefault();
     console.log("Form submitted:", formData);
     try {
-      // url 아직
-      const response = await fetch("loginurl", {
+      const response = await fetch("http://localhost:8080/user/login", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
         body: JSON.stringify(formData),
       });
       const data = await response.json();
-      console.log(data);
+      if (data.stuats) {
+        alert(data.message);
+      } else {
+        alert(data.message);
+      }
     } catch (error) {
       console.error(error);
     }
