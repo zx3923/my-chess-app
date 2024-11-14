@@ -4,6 +4,7 @@ import MainScreen from "./MainScreen";
 import ChessBoard from "./ChessBoard";
 import SignUp from "./SignUp";
 import Login from "./Login";
+import Matching from "./Matching";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -24,6 +25,10 @@ const router = createBrowserRouter([
       {
         path: "login",
         element: <Login />,
+      },
+      {
+        path: "matching",
+        element: <Matching />,
       },
     ],
   },

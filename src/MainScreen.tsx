@@ -4,7 +4,7 @@ export default function MainScreen() {
   const navigate = useNavigate();
 
   const onStartClick = () => {
-    navigate("/chessboard");
+    navigate("/matching");
   };
 
   const signUpClick = () => {
