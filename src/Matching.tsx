@@ -19,6 +19,33 @@ export default function Matching() {
   const startMatching = () => {
     setIsMatching(true);
     console.log(`Started matching for ${selectedGameType} game`);
+    handleSubmit();
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/match/request", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          userId: 1,
+          gameMode: selectedGameType,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.text(); // 응답 데이터 파싱
+        console.log(data);
+      } else {
+        const error = await response.text();
+        console.log(error);
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
