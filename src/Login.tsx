@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useRecoilState } from "recoil";
+import { userState } from "./recoil/atoms/userAtom";
 
 export default function Login() {
   const navigate = useNavigate();
+  const [user, setUser] = useRecoilState(userState);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -29,10 +32,15 @@ export default function Login() {
         body: JSON.stringify(formData),
       });
       const data = await response.json();
-      if (data.stuats) {
-        alert(data.message);
-      } else {
-        alert(data.message);
+      console.log(data);
+      if (data.status) {
+        setUser({
+          isLoggedIn: true,
+          userId: data.userId,
+          userName: data.username,
+          token: data.token,
+        });
+        navigate("/");
       }
     } catch (error) {
       console.error(error);

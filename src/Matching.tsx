@@ -1,11 +1,18 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { Client, Stomp } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
+import { useRecoilValue } from "recoil";
+import { userState } from "./recoil/atoms/userAtom";
 
 type GameType = "blitz" | "rapid" | "bullet";
 
 export default function Matching() {
+  const user = useRecoilValue(userState);
   const [selectedGameType, setSelectedGameType] = useState<GameType>("rapid");
   const [isMatching, setIsMatching] = useState(false);
+  const [stompClient, setStompClient] = useState<Client | null>(null);
+  const [matchResult, setMatchResult] = useState<string>("");
   const navigate = useNavigate();
 
   const mainClick = () => {
@@ -16,36 +23,42 @@ export default function Matching() {
     setSelectedGameType(e.target.value as GameType);
   };
 
-  const startMatching = () => {
-    setIsMatching(true);
-    console.log(`Started matching for ${selectedGameType} game`);
-    handleSubmit();
+  const webSocketConnection = () => {
+    const socket = new SockJS("http://localhost:8080/ws");
+
+    const client = new Client({
+      webSocketFactory: () => socket, // SockJS를 사용하여 WebSocket 연결 설정
+      debug: (str) => console.log(str), // 디버그 로그 출력
+      onConnect: () => {
+        console.log("Connected to WebSocket");
+
+        // 매칭 성공 메시지를 수신
+        client.subscribe("/topic/match-success", (message) => {
+          setMatchResult(message.body);
+        });
+
+        setStompClient(client); // 상태에 클라이언트 저장
+      },
+      onStompError: (frame) => {
+        console.error("Broker reported error: ", frame.headers["message"]);
+        console.error("Additional details: ", frame.body);
+      },
+    });
+
+    client.activate(); // WebSocket 연결 활성화
   };
 
-  const handleSubmit = async () => {
-    try {
-      const response = await fetch("http://localhost:8080/match/request", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({
-          userId: 1,
-          gameMode: selectedGameType,
-        }),
-      });
-
-      if (response.ok) {
-        const data = await response.text(); // 응답 데이터 파싱
-        console.log(data);
-      } else {
-        const error = await response.text();
-        console.log(error);
-      }
-    } catch (error) {
-      console.error(error);
+  const initiateMatch = () => {
+    if (!stompClient || !stompClient.connected) {
+      alert("WebSocket 연결이 설정되지 않았습니다.");
+      return;
     }
+
+    // 매칭 요청 전송
+    stompClient.publish({
+      destination: "/app/match",
+      body: JSON.stringify({ userId: user.userId, selectedGameType }), // 플레이어 ID 예시
+    });
   };
 
   return (
@@ -69,7 +82,7 @@ export default function Matching() {
         </div>
         {!isMatching ? (
           <button
-            onClick={startMatching}
+            onClick={webSocketConnection}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300"
           >
             매칭 시작
@@ -78,8 +91,18 @@ export default function Matching() {
           <div className="text-center">
             <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mr-2"></div>
             <span className="text-lg font-semibold">매칭 중...</span>
+            <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300">
+              매칭 취소
+            </button>
           </div>
         )}
+
+        <button
+          onClick={initiateMatch}
+          disabled={!stompClient || !stompClient.connected}
+        >
+          Start Match
+        </button>
       </div>
       <div className="text-center">
         <button

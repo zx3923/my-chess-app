@@ -1,6 +1,9 @@
 import { useNavigate } from "react-router-dom";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { userState } from "./recoil/atoms/userAtom";
 
 export default function MainScreen() {
+  const [user, setUser] = useRecoilState(userState);
   const navigate = useNavigate();
 
   const onStartClick = () => {
@@ -14,6 +17,17 @@ export default function MainScreen() {
   const loginClick = () => {
     navigate("/login");
   };
+
+  const logoutClick = () => {
+    setUser({
+      isLoggedIn: false,
+      userId: null,
+      userName: "",
+      token: null,
+    });
+    // navigate("/login");
+  };
+  console.log(user);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-neutral-900 to-neutral-800 text-neutral-200 p-4">
@@ -35,20 +49,32 @@ export default function MainScreen() {
             게임 시작
           </button>
           <div className="flex space-x-4">
-            <button
-              className="flex-1 px-6 py-2 bg-neutral-700 text-neutral-200 rounded-lg text-base font-medium hover:bg-neutral-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:ring-opacity-50"
-              aria-label="로그인"
-              onClick={loginClick}
-            >
-              로그인
-            </button>
-            <button
-              className="flex-1 px-6 py-2 bg-purple-600 text-neutral-200 rounded-lg text-base font-medium hover:bg-purple-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
-              aria-label="회원가입"
-              onClick={signUpClick}
-            >
-              회원가입
-            </button>
+            {user.isLoggedIn ? (
+              <button
+                className="flex-1 px-6 py-2 bg-neutral-700 text-neutral-200 rounded-lg text-base font-medium hover:bg-neutral-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:ring-opacity-50"
+                aria-label="로그인"
+                onClick={logoutClick}
+              >
+                로그아웃
+              </button>
+            ) : (
+              <>
+                <button
+                  className="flex-1 px-6 py-2 bg-neutral-700 text-neutral-200 rounded-lg text-base font-medium hover:bg-neutral-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:ring-opacity-50"
+                  aria-label="로그인"
+                  onClick={loginClick}
+                >
+                  로그인
+                </button>
+                <button
+                  className="flex-1 px-6 py-2 bg-purple-600 text-neutral-200 rounded-lg text-base font-medium hover:bg-purple-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
+                  aria-label="회원가입"
+                  onClick={signUpClick}
+                >
+                  회원가입
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>
