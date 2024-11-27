@@ -39,6 +39,7 @@ export default function Login() {
           userId: data.userId,
           userName: data.username,
           token: data.token,
+          refreshToken: data.refreshToken,
         });
         navigate("/");
       }
